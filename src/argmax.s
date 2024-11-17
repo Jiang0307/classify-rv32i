@@ -22,16 +22,17 @@
 #   - Terminates program with exit code 36 if array length < 1
 # =================================================================
 argmax:
-    li t6, 1
-    blt a1, t6, handle_error
+    LI t6, 1
+    BLT a1, t6, handle_error
 
-    lw t0, 0(a0)
+    LW t0, 0(a0)
 
-    li t1, 0
-    li t2, 1
+    LI t1, 0
+    LI t2, 1
+
 loop_start:
     # TODO: Add your own implementation
 
 handle_error:
-    li a0, 36
-    j exit
+    LI a0, 36
+    J exit

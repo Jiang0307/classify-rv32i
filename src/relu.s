@@ -22,14 +22,29 @@
 #   Input:  [-2, 0, 3, -1, 5]
 #   Result: [ 0, 0, 3,  0, 5]
 # ==============================================================================
+
 relu:
-    li t0, 1             
-    blt a1, t0, error     
-    li t1, 0             
+    LI t0, 1
+    BLT a1, t0, error
+    LI t1, 0
 
 loop_start:
     # TODO: Add your own implementation
+    LI t3, 0
+
+    LW t2, 0(a0)
+    BLT t2, t3, negative
+    J next_number
+
+negative:
+    SW t3, 0(a0)
+
+next_number:
+    ADDI a0, a0, 4
+    ADDI a1, a1, -1
+    BGT a1, t3, loop_start
+    ret
 
 error:
-    li a0, 36          
-    j exit          
+    li a0, 36 
+    j exit
