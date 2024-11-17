@@ -21,17 +21,44 @@
 # Error Cases:
 #   - Terminates program with exit code 36 if array length < 1
 # =================================================================
+
+# t0 : maximum number
+# t1 : maximum index
+
+# t2 : current index
+# t3 : current number
+
 argmax:
     LI t6, 1
     BLT a1, t6, handle_error
+    BEQ a1, t6, only_one_element
 
     LW t0, 0(a0)
-
     LI t1, 0
+    
     LI t2, 1
+    ADDI a0, a0, 4
 
 loop_start:
     # TODO: Add your own implementation
+    LW t3, 0(a0)
+    BGT t3, t0, update_maximum
+    J next_number
+
+update_maximum:
+    MV t0, t3
+    MV t1, t2
+
+next_number:
+    ADDI a0, a0, 4
+    ADDI t2, t2, 1
+    BLT t2, a1, loop_start
+    MV a0, t1
+    ret
+
+only_one_element:
+    LI a0, 0
+    ret
 
 handle_error:
     LI a0, 36
