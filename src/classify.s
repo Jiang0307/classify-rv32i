@@ -30,7 +30,7 @@
 classify:
     # Error handling
     LI t0, 5
-    BLT a0, t0, error_args
+    blt a0, t0, error_args
     
     # Prolouge
     ADDI sp, sp, -48
@@ -46,7 +46,7 @@ classify:
     
     SW s5, 24(sp) # m1 matrix rows
     SW s6, 28(sp) # m1 matrix cols
-     
+
     SW s7, 32(sp) # input matrix rows
     SW s8, 36(sp) # input matrix cols
     SW s9, 40(sp) # h
@@ -62,12 +62,12 @@ classify:
     
     LI a0, 4
     JAL malloc # malloc 4 bytes for an integer, rows
-    BEQ a0, x0, error_malloc
+    beq a0, x0, error_malloc
     MV s3, a0 # save m0 rows pointer for later
     
     LI a0, 4
     JAL malloc # malloc 4 bytes for an integer, cols
-    BEQ a0, x0, error_malloc
+    beq a0, x0, error_malloc
     MV s4, a0 # save m0 cols pointer for later
     
     LW a1, 4(sp) # restores the argument pointer
@@ -95,12 +95,12 @@ classify:
     
     LI a0, 4
     JAL malloc # malloc 4 bytes for an integer, rows
-    BEQ a0, x0, error_malloc
+    beq a0, x0, error_malloc
     MV s5, a0 # save m1 rows pointer for later
     
     LI a0, 4
     JAL malloc # malloc 4 bytes for an integer, cols
-    BEQ a0, x0, error_malloc
+    beq a0, x0, error_malloc
     MV s6, a0 # save m1 cols pointer for later
     
     LW a1, 4(sp) # restores the argument pointer
@@ -129,12 +129,12 @@ classify:
     
     LI a0, 4
     JAL malloc # malloc 4 bytes for an integer, rows
-    BEQ a0, x0, error_malloc
+    beq a0, x0, error_malloc
     MV s7, a0 # save input rows pointer for later
     
     LI a0, 4
     JAL malloc # malloc 4 bytes for an integer, cols
-    BEQ a0, x0, error_malloc
+    beq a0, x0, error_malloc
     MV s8, a0 # save input cols pointer for later
     
     LW a1, 4(sp) # restores the argument pointer
@@ -166,10 +166,27 @@ classify:
     
     LW t0, 0(s3)
     LW t1, 0(s8)
-    # mul a0, t0, t1 # FIXME: Replace 'mul' with your own implementation
+    # mul a0, t0, t1 
+    # FIXME: Replace 'mul' with your own implementation
+    #---------------------FIXME1-----------------------
+    # t0 : multiplicand
+    # t1 : multiplier
+    LI t4, 0
+    multiply_start1:
+        BEQZ t1, multiply_end1           # end multiplication if multiplier is 0
+        ANDI t3, t1, 1
+        BEQZ t3, multiply_skip_add1      # add only when multiplier's LSB is 1
+        ADD t4, t4, t0
+    multiply_skip_add1:
+        SLLI t0, t0, 1
+        SRLI t1, t1, 1
+        J multiply_start1
+    multiply_end1:
+        MV a0, t4
+    #---------------------FIXME1-----------------------
     SLLI a0, a0, 2
     JAL malloc 
-    BEQ a0, x0, error_malloc
+    beq a0, x0, error_malloc
     MV s9, a0 # move h to s9
     
     MV a6, a0 # h 
@@ -205,7 +222,22 @@ classify:
     LW t1, 0(s8)
     # mul a1, t0, t1 # length of h array and set it as second argument
     # FIXME: Replace 'mul' with your own implementation
-    
+    #---------------------FIXME2-----------------------
+    # t0 : multiplicand
+    # t1 : multiplier
+    LI t4, 0
+    multiply_start2:
+        BEQZ t1, multiply_end2           # end multiplication if multiplier is 0
+        ANDI t3, t1, 1
+        BEQZ t3, multiply_skip_add2      # add only when multiplier's LSB is 1
+        ADD t4, t4, t0
+    multiply_skip_add2:
+        SLLI t0, t0, 1
+        SRLI t1, t1, 1
+        J multiply_start2
+    multiply_end2:
+        MV a1, t4
+    #---------------------FIXME2-----------------------
     JAL relu
     
     LW a0, 0(sp)
@@ -226,10 +258,28 @@ classify:
     
     LW t0, 0(s3)
     LW t1, 0(s6)
-    # mul a0, t0, t1 # FIXME: Replace 'mul' with your own implementation
+    # mul a0, t0, t1 
+    # FIXME: Replace 'mul' with your own implementation
+    #---------------------FIXME3-----------------------
+    # t0 : multiplicand
+    # t1 : multiplier
+    LI t4, 0
+    multiply_start3:
+        BEQZ t1, multiply_end3           # end multiplication if multiplier is 0
+        ANDI t3, t1, 1
+        BEQZ t3, multiply_skip_add3      # add only when multiplier's LSB is 1
+        ADD t4, t4, t0
+    multiply_skip_add3:
+        SLLI t0, t0, 1
+        SRLI t1, t1, 1
+        J multiply_start3
+    multiply_end3:
+        MV a0, t4
+    #---------------------FIXME3-----------------------
+
     SLLI a0, a0, 2
     JAL malloc 
-    BEQ a0, x0, error_malloc
+    beq a0, x0, error_malloc
     MV s10, a0 # move o to s10
     
     MV a6, a0 # o
@@ -286,9 +336,24 @@ classify:
     MV a0, s10 # load o array into first arg
     LW t0, 0(s3)
     LW t1, 0(s6)
-    mul a1, t0, t1 # load length of array into second arg
+    # mul a1, t0, t1 # load length of array into second arg
     # FIXME: Replace 'mul' with your own implementation
-    
+    #---------------------FIXME4-----------------------
+    # t0 : multiplicand
+    # t1 : multiplier
+    LI t4, 0
+    multiply_start4:
+        BEQZ t1, multiply_end4           # end multiplication if multiplier is 0
+        ANDI t3, t1, 1
+        BEQZ t3, multiply_skip_add4      # add only when multiplier's LSB is 1
+        ADD t4, t4, t0
+    multiply_skip_add4:
+        SLLI t0, t0, 1
+        SRLI t1, t1, 1
+        J multiply_start4
+    multiply_end4:
+        MV a1, t4
+    #---------------------FIXME4-----------------------
     JAL argmax
     
     MV t0, a0 # move return value of argmax into t0

@@ -42,7 +42,7 @@ negative:
 next_number:
     ADDI a0, a0, 4
     ADDI a1, a1, -1
-    
+    BGT a1, t3, loop_start
     RET
 
 error:

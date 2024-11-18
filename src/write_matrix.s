@@ -65,18 +65,18 @@ write_matrix:
     # FIXME: Replace 'mul' with your own implementation
     # s2 : multiplicand
     # s3 : multiplier
-    LI t1, 0
+    LI t4, 0
     multiply_start:
         BEQZ s3, multiply_end           # end multiplication if multiplier is 0
         ANDI t3, s3, 1
         BEQZ t3, multiply_skip_add      # add only when multiplier's LSB is 1
-        ADD t1, t1, s2
+        ADD t4, t4, s2
     multiply_skip_add:
         SLLI s2, s2, 1
         SRLI s3, s3, 1
         J multiply_start
     multiply_end:
-        MV s4, t1
+        MV s4, t4
 
     # write matrix data to file
     MV a0, s0
