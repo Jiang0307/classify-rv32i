@@ -3,10 +3,10 @@
 ## Part A: Mathematical Functions
 
 ### Task 1: ReLU
-* In `relu.s`, traverse through the array and check the value one by one. If the value is negative then replace it with 0.
+In `relu.s`, traverse through the array and check the value one by one. If the value is negative then replace it with 0.
 
 ### Task 2: ArgMax
-* In `argmax.s`, traverse through the array and check the value one by one. If `current number` is greater than the `maximum number`, then update the `maximum number`.
+In `argmax.s`, traverse through the array and check the value one by one. If `current number` is greater than the `maximum number`, then update the `maximum number`.
 
 ### Task 3.1: Dot Product
 #### Algorithm of muliplier
@@ -16,10 +16,10 @@
     4. Repeat step 1~3 until multiplier is 0.
 
 #### dot
-* In `dot.s`, calculate the stride0 and stide1 for array1 and array2. In each loop, calculate the value of current position using `multiplier`.
+In `dot.s`, calculate the stride0 and stide1 for array1 and array2. In each loop, calculate the value of current position using `multiplier`.
 
 ### Task 3.2: Matrix Multiplication
-* In `matmul.s` we need to implement `inner_loop_end` and `outer_loop_end`.
+In `matmul.s` we need to implement `inner_loop_end` and `outer_loop_end`.
 
 #### inner_loop_end
 ```
@@ -31,7 +31,7 @@ inner_loop_end:
     ADDI s0, s0, 1      # Outer loop counter + 1
     J outer_loop_start  # Continue to calculate the next row
 ```
-* In `inner_loop_end`, we can intuitively know that every time the inner loop finishes, it will contiue a new outer loop, so the last instruction in `inner_loop_end` should be `J outer_loop_start`. At the same time, a loop also needs to increment the loop counter, so there should be a instruction `ADDI s0, s0, 1`, and we also need to calculate the matrix addresses for the next iteration.
+In `inner_loop_end`, we can intuitively know that every time the inner loop finishes, it will contiue a new outer loop, so the last instruction in `inner_loop_end` should be `J outer_loop_start`. At the same time, a loop also needs to increment the loop counter, so there should be a instruction `ADDI s0, s0, 1`, and we also need to calculate the matrix addresses for the next iteration.
 
 #### outer_loop_end
 ```
@@ -47,14 +47,14 @@ outer_loop_end:
     ADDI sp, sp, 28
     JR ra
 ```
-* In `outer_loop_end:`, We have to restore all `s` registers to their original state and then exit the function.
+In `outer_loop_end:`, We have to restore all `s` registers to their original state and then exit the function.
 
 ## Part B: File Operations and Main
-* In `read_matrix.s`,`write_matrix.s` and `classify.s`, all we have to do is replace mul with our self implemented `multiplier`.
+In `read_matrix.s`,`write_matrix.s` and `classify.s`, all we have to do is replace mul with our self implemented `multiplier`.
 
 ## Other
 ### abs.s
-* In `abs.s`, check the input value, return if it's positive number. If not, just simply substract the input value by 0.
+In `abs.s`, check the input value, return if it's positive number. If not, just simply substract the input value by 0.
 
 ## Result
 > bash ./test.sh all
