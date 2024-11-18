@@ -20,11 +20,11 @@
 # =================================================================
 main:
     # initialize register a2 to zero
-    mv a2, zero
+    MV a2, zero
 
     # call classify function
-    jal classify
+    JAL classify
 
     # exit program normally
-    li a0 0
-    jal exit
+    LI a0 0
+    JAL exit

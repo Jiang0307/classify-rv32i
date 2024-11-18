@@ -25,91 +25,105 @@
 # ==============================================================================
 write_matrix:
     # Prologue
-    addi sp, sp, -44
-    sw ra, 0(sp)
-    sw s0, 4(sp)
-    sw s1, 8(sp)
-    sw s2, 12(sp)
-    sw s3, 16(sp)
-    sw s4, 20(sp)
+    ADDI sp, sp, -44
+    SW ra, 0(sp)
+    SW s0, 4(sp)
+    SW s1, 8(sp)
+    SW s2, 12(sp)
+    SW s3, 16(sp)
+    SW s4, 20(sp)
 
     # save arguments
-    mv s1, a1        # s1 = matrix pointer
-    mv s2, a2        # s2 = number of rows
-    mv s3, a3        # s3 = number of columns
+    MV s1, a1        # s1 = matrix pointer
+    MV s2, a2        # s2 = number of rows
+    MV s3, a3        # s3 = number of columns
 
-    li a1, 1
+    LI a1, 1
 
-    jal fopen
+    JAL fopen
 
-    li t0, -1
-    beq a0, t0, fopen_error   # fopen didn't work
+    LI t0, -1
+    BEQ a0, t0, fopen_error   # fopen didn't work
 
-    mv s0, a0        # file descriptor
+    MV s0, a0        # file descriptor
 
     # Write number of rows and columns to file
-    sw s2, 24(sp)    # number of rows
-    sw s3, 28(sp)    # number of columns
+    SW s2, 24(sp)    # number of rows
+    SW s3, 28(sp)    # number of columns
 
-    mv a0, s0
-    addi a1, sp, 24  # buffer with rows and columns
-    li a2, 2         # number of elements to write
-    li a3, 4         # size of each element
+    MV a0, s0
+    ADDI a1, sp, 24  # buffer with rows and columns
+    LI a2, 2         # number of elements to write
+    LI a3, 4         # size of each element
 
-    jal fwrite
+    JAL fwrite
 
-    li t0, 2
-    bne a0, t0, fwrite_error
+    LI t0, 2
+    BNE a0, t0, fwrite_error
 
     # mul s4, s2, s3   # s4 = total elements
     # FIXME: Replace 'mul' with your own implementation
+    # s2 : multiplicand
+    # s3 : multiplier
+    LI t1, 0
+    multiply_start:
+        BEQZ s3, multiply_end           # end multiplication if multiplier is 0
+        ANDI t3, s3, 1
+        BEQZ t3, multiply_skip_add      # add only when multiplier's LSB is 1
+        ADD t1, t1, s2
+    multiply_skip_add:
+        SLLI s2, s2, 1
+        SRLI s3, s3, 1
+        J multiply_start
+    multiply_end:
+        MV s4, t1
 
     # write matrix data to file
-    mv a0, s0
-    mv a1, s1        # matrix data pointer
-    mv a2, s4        # number of elements to write
-    li a3, 4         # size of each element
+    MV a0, s0
+    MV a1, s1        # matrix data pointer
+    MV a2, s4        # number of elements to write
+    LI a3, 4         # size of each element
 
-    jal fwrite
+    JAL fwrite
 
-    bne a0, s4, fwrite_error
+    BNE a0, s4, fwrite_error
 
-    mv a0, s0
+    MV a0, s0
 
-    jal fclose
+    JAL fclose
 
-    li t0, -1
-    beq a0, t0, fclose_error
+    LI t0, -1
+    BEQ a0, t0, fclose_error
 
     # Epilogue
-    lw ra, 0(sp)
-    lw s0, 4(sp)
-    lw s1, 8(sp)
-    lw s2, 12(sp)
-    lw s3, 16(sp)
-    lw s4, 20(sp)
-    addi sp, sp, 44
+    LW ra, 0(sp)
+    LW s0, 4(sp)
+    LW s1, 8(sp)
+    LW s2, 12(sp)
+    LW s3, 16(sp)
+    LW s4, 20(sp)
+    ADDI sp, sp, 44
 
-    jr ra
+    JR ra
 
 fopen_error:
-    li a0, 27
-    j error_exit
+    LI a0, 27
+    J error_exit
 
 fwrite_error:
-    li a0, 30
-    j error_exit
+    LI a0, 30
+    J error_exit
 
 fclose_error:
-    li a0, 28
-    j error_exit
+    LI a0, 28
+    J error_exit
 
 error_exit:
-    lw ra, 0(sp)
-    lw s0, 4(sp)
-    lw s1, 8(sp)
-    lw s2, 12(sp)
-    lw s3, 16(sp)
-    lw s4, 20(sp)
-    addi sp, sp, 44
-    j exit
+    LW ra, 0(sp)
+    LW s0, 4(sp)
+    LW s1, 8(sp)
+    LW s2, 12(sp)
+    LW s3, 16(sp)
+    LW s4, 20(sp)
+    ADDI sp, sp, 44
+    J exit

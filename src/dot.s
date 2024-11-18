@@ -26,27 +26,54 @@
 #   - Exits with code 37 if any stride < 1
 # =======================================================
 dot:
-    li t0, 1
-    blt a2, t0, error_terminate  
-    blt a3, t0, error_terminate   
-    blt a4, t0, error_terminate  
+    LI t0, 1
+    BLT a2, t0, error_terminate  
+    BLT a3, t0, error_terminate   
+    BLT a4, t0, error_terminate  
 
-    li t0, 0            
-    li t1, 0         
+    LI t0, 0 # answer
+    LI t1, 0 # i
+    
+    SLLI a3, a3, 2 # a3 = 4 * a3
+    SLLI a4, a4, 2 # a4 = 4 * a4
+
 
 loop_start:
-    bge t1, a2, loop_end
-    # TODO: Add your own implementation
+    BGE t1, a2, loop_end
+    # TODO
+    LI t2, 0                            # t2 : multiply result
+    LW t3, 0(a0)                        # t3 : multiplicand
+    LW t4, 0(a1)                        # t4 : multiplier
+
+    multiply_start:
+        BEQZ t4, multiply_end           # end multiplication if multiplier is 0
+
+        ANDI t5, t4, 1
+        BEQZ t5, multiply_skip_add      # add only when multiplier's LSB is 1
+        ADD t2, t2, t3
+
+    multiply_skip_add:
+        SLLI t3, t3, 1
+        SRLI t4, t4, 1
+        J multiply_start
+
+    multiply_end:
+        ADD t0, t0, t2                  # add multiply result to answer
+        ADD a0, a0, a3
+        ADD a1, a1, a4                  
+
+        ADDI t1, t1, 1
+        BLT t1, a2, loop_start
 
 loop_end:
-    mv a0, t0
-    jr ra
+    MV a0, t0
+    JR ra
 
 error_terminate:
-    blt a2, t0, set_error_36
-    li a0, 37
-    j exit
+    BLT a2, t0, set_error_36
+    LI a0, 37
+    J exit
 
 set_error_36:
-    li a0, 36
-    j exit
+    LI a0, 36
+    J exit

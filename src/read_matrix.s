@@ -37,109 +37,123 @@
 read_matrix:
     
     # Prologue
-    addi sp, sp, -40
-    sw ra, 0(sp)
-    sw s0, 4(sp)
-    sw s1, 8(sp)
-    sw s2, 12(sp)
-    sw s3, 16(sp)
-    sw s4, 20(sp)
+    ADDI sp, sp, -40
+    SW ra, 0(sp)
+    SW s0, 4(sp)
+    SW s1, 8(sp)
+    SW s2, 12(sp)
+    SW s3, 16(sp)
+    SW s4, 20(sp)
 
-    mv s3, a1         # save and copy rows
-    mv s4, a2         # save and copy cols
+    MV s3, a1         # save and copy rows
+    MV s4, a2         # save and copy cols
 
-    li a1, 0
+    LI a1, 0
 
-    jal fopen
+    JAL fopen
 
-    li t0, -1
-    beq a0, t0, fopen_error   # fopen didn't work
+    LI t0, -1
+    BEQ a0, t0, fopen_error   # fopen didn't work
 
-    mv s0, a0        # file
+    MV s0, a0        # file
 
     # read rows n columns
-    mv a0, s0
-    addi a1, sp, 28  # a1 is a buffer
+    MV a0, s0
+    ADDI a1, sp, 28  # a1 is a buffer
 
-    li a2, 8         # look at 2 numbers
+    LI a2, 8         # look at 2 numbers
 
-    jal fread
+    JAL fread
 
-    li t0, 8
-    bne a0, t0, fread_error
+    LI t0, 8
+    BNE a0, t0, fread_error
 
-    lw t1, 28(sp)    # opening to save num rows
-    lw t2, 32(sp)    # opening to save num cols
+    LW t1, 28(sp)    # opening to save num rows
+    LW t2, 32(sp)    # opening to save num cols
 
-    sw t1, 0(s3)     # saves num rows
-    sw t2, 0(s4)     # saves num cols
+    SW t1, 0(s3)     # saves num rows
+    SW t2, 0(s4)     # saves num cols
 
     # mul s1, t1, t2   # s1 is number of elements
     # FIXME: Replace 'mul' with your own implementation
+    # t1 : multiplicand
+    # t2 : multiplier
+    LI t4, 0
+    multiply_start:
+        BEQZ t2, multiply_end           # end multiplication if multiplier is 0
+        ANDI t3, t2, 1
+        BEQZ t3, multiply_skip_add      # add only when multiplier's LSB is 1
+        ADD t4, t4, t1
+    multiply_skip_add:
+        SLLI t1, t1, 1
+        SRLI t2, t2, 1
+        J multiply_start
+    multiply_end:
+        MV s1, t4
 
-    slli t3, s1, 2
-    sw t3, 24(sp)    # size in bytes
+    SLLI t3, s1, 2
+    SW t3, 24(sp)    # size in bytes
 
-    lw a0, 24(sp)    # a0 = size in bytes
+    LW a0, 24(sp)    # a0 = size in bytes
 
-    jal malloc
+    JAL malloc
 
-    beq a0, x0, malloc_error
+    BEQ a0, x0, malloc_error
 
     # set up file, buffer and bytes to read
-    mv s2, a0        # matrix
-    mv a0, s0
-    mv a1, s2
-    lw a2, 24(sp)
+    MV s2, a0        # matrix
+    MV a0, s0
+    MV a1, s2
+    LW a2, 24(sp)
 
-    jal fread
+    JAL fread
 
-    lw t3, 24(sp)
-    bne a0, t3, fread_error
+    LW t3, 24(sp)
+    BNE a0, t3, fread_error
 
-    mv a0, s0
+    MV a0, s0
 
-    jal fclose
+    JAL fclose
 
-    li t0, -1
+    LI t0, -1
 
-    beq a0, t0, fclose_error
+    BEQ a0, t0, fclose_error
 
-    mv a0, s2
+    MV a0, s2
 
     # Epilogue
-    lw ra, 0(sp)
-    lw s0, 4(sp)
-    lw s1, 8(sp)
-    lw s2, 12(sp)
-    lw s3, 16(sp)
-    lw s4, 20(sp)
-    addi sp, sp, 40
+    LW ra, 0(sp)
+    LW s0, 4(sp)
+    LW s1, 8(sp)
+    LW s2, 12(sp)
+    LW s3, 16(sp)
+    LW s4, 20(sp)
+    ADDI sp, sp, 40
 
-    jr ra
+    JR ra
 
 malloc_error:
-    li a0, 26
-    j error_exit
+    LI a0, 26
+    J error_exit
 
 fopen_error:
-    li a0, 27
-    j error_exit
+    LI a0, 27
+    J error_exit
 
 fread_error:
-    li a0, 29
-    j error_exit
+    LI a0, 29
+    J error_exit
 
 fclose_error:
-    li a0, 28
-    j error_exit
+    LI a0, 28
+    J error_exit
 
 error_exit:
-    lw ra, 0(sp)
-    lw s0, 4(sp)
-    lw s1, 8(sp)
-    lw s2, 12(sp)
-    lw s3, 16(sp)
-    lw s4, 20(sp)
-    addi sp, sp, 40
-    j exit
+    LW ra, 0(sp)
+    LW s0, 4(sp)
+    LW s1, 8(sp)
+    LW s2, 12(sp)
+    LW s3, 16(sp)
+    LW s4, 20(sp)
+    ADDI sp, sp, 40
+    J exit

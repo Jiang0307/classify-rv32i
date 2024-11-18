@@ -54,11 +54,11 @@ next_number:
     ADDI t2, t2, 1
     BLT t2, a1, loop_start
     MV a0, t1
-    ret
+    RET
 
 only_one_element:
     LI a0, 0
-    ret
+    RET
 
 handle_error:
     LI a0, 36
